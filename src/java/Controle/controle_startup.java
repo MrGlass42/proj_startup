@@ -69,17 +69,20 @@ public class controle_startup extends HttpServlet {
 
                 EntidadeDominio[] dados = (EntidadeDominio[]) respostaFachada.getDados();
 
-                System.out.println(respostaFachada.getMensagem());
+                //System.out.println(respostaFachada.getMensagem());
 
                 usuario = (Usuario) dados[0];
 
                 if (usuario.getId() > 0) {
+                    
+                    System.out.println("Usuario Autenticado Com Sucesso !!!");
+                    
                     switch (usuario.getTipo()) {
                         case "empresa":
-
-                            System.out.println("Usuario Autenticado Com Sucesso !!!");
-
                             response.sendRedirect("cadastro_startup.html?id_startup=" + dados[1].getId());
+                            break;
+                        case "admin":
+                            response.sendRedirect("pagina_admin.html");
                             break;
                     }
                 } else {
@@ -98,6 +101,16 @@ public class controle_startup extends HttpServlet {
                 Mensagem repostaFachada = new Fachada().excluir(entidadeParaExclusao);
                 
                 out.print(new Gson().toJson(repostaFachada));
+                break;
+            case "5":
+                EntidadeDominio[] respostaFachadaComEntidades = (EntidadeDominio[]) new Fachada().consultar(request.getParameter("chaveHash")).getDados();
+                
+                out.print(new Gson().toJson(respostaFachadaComEntidades));
+                break;
+            case "6":
+                Mensagem repostaFachadaAposAtualizacao = new Fachada().atualizar_situacao_empresa(Integer.valueOf(request.getParameter("id_startup")));
+                
+                out.print(new Gson().toJson(repostaFachadaAposAtualizacao));
                 break;
         }
     }

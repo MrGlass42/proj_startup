@@ -45,8 +45,10 @@ public class Fachada implements iFachada {
     }
 
     @Override
-    public Mensagem consultar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Mensagem consultar(String nomeClasse) {
+        Mensagem respostaDao = this.hashMapDao.get(nomeClasse).consultar();
+        
+        return respostaDao;
     }
 
     public Mensagem consultar(String classeEntidade, int id_entidade) {
@@ -61,7 +63,7 @@ public class Fachada implements iFachada {
         Mensagem respostaDAO1 = new UsuarioDAO().consultar(usuario);
         Mensagem respostaDAO2 = new UsuarioDAO().buscarEntidadePai(usuario);
 
-        if (respostaDAO1.getCodigo() == 0 && respostaDAO2.getCodigo() == 0) {
+        if (respostaDAO1.getCodigo() == 0 && (respostaDAO2.getCodigo() == 0 || respostaDAO2.getCodigo() == 1)) {
 
             respostaFachada.setCodigo(0);
             respostaFachada.setMensagem("Usuario autenticado com sucesso !!!");
@@ -77,6 +79,10 @@ public class Fachada implements iFachada {
         }
 
         return respostaFachada;
+    }
+    
+    public Mensagem atualizar_situacao_empresa (int id) {
+        return new EmpresaDAO().atualizarSituacao(id);
     }
 
 }
