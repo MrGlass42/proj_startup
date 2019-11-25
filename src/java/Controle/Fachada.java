@@ -4,6 +4,7 @@ import DAOs.EmpresaDAO;
 import DAOs.TelefoneDAO;
 import DAOs.UsuarioDAO;
 import DAOs.EnderecoDAO;
+import DAOs.InvestidorDAO;
 import Interfaces.iDAO;
 import Interfaces.iFachada;
 import Interfaces.iStrategy;
@@ -24,12 +25,20 @@ public class Fachada implements iFachada {
         this.hashMapDao = new HashMap<String, iDAO>();
         this.hashMapDao.put("Empresa", new EmpresaDAO());
         this.hashMapDao.put("Telefone", new TelefoneDAO());
+        this.hashMapDao.put("Investidor", new InvestidorDAO());
         
-        ArrayList<iStrategy> listaValidadores = new ArrayList<iStrategy>();
-        listaValidadores.add(new validadorExistenciaEmpresa());
+        
+        ArrayList<iStrategy> listaValidadoresEmpresa = new ArrayList<iStrategy>();
+        listaValidadoresEmpresa.add(new validadorExistenciaEmpresa());
+        
+
+        ArrayList<iStrategy> listaValidadoresInvestidor = new ArrayList<iStrategy>();
+        listaValidadoresInvestidor.add(new validadorExistenciaInvestidor());
+        
         
         this.hashMapStrategy = new HashMap<String, ArrayList<iStrategy>>();
-        this.hashMapStrategy.put("Empresa", listaValidadores);
+        this.hashMapStrategy.put("Empresa", listaValidadoresEmpresa);
+        this.hashMapStrategy.put("Investidor", listaValidadoresInvestidor);
     }
 
     @Override
@@ -38,6 +47,7 @@ public class Fachada implements iFachada {
         
         boolean flagEntidadeValidada = true;
         ArrayList<iStrategy> listaValidadores = this.hashMapStrategy.get(entidade.getClass().getSimpleName());
+        
         for (int i = 0; i < listaValidadores.size(); i++) {
             respostaDAO = listaValidadores.get(i).processar(entidade);
             

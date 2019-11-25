@@ -32,6 +32,7 @@ public class controle_startup extends HttpServlet {
         this.hashMapViewHelper = new HashMap<String, iViewHelper>();
         this.hashMapViewHelper.put("Empresa", new ViewHelperEmpresa());
         this.hashMapViewHelper.put("Telefone", new ViewHelperTelefone());
+        this.hashMapViewHelper.put("Investidor", new ViewHelperInvestidor());
         
         this.HashMapCommand = new HashMap<String, iCommand>();
         this.HashMapCommand.put("1", new salvarCommand());
@@ -50,6 +51,7 @@ public class controle_startup extends HttpServlet {
 
         switch (opcao) {
             default:
+                
                 EntidadeDominio entidade = this.hashMapViewHelper.get(request.getParameter("chaveHash")).getEntidade(request);
                 
                 Mensagem respostaCommand = this.HashMapCommand.get(opcao).executar(entidade);
@@ -61,7 +63,6 @@ public class controle_startup extends HttpServlet {
                 }
                 
                 break;
-                
             case "2":
                 // Autenticação dos Usuários
 
@@ -83,6 +84,9 @@ public class controle_startup extends HttpServlet {
                             break;
                         case "admin":
                             response.sendRedirect("pagina_admin.html");
+                            break;
+                        case "investidor":
+                            response.sendRedirect("listagem_empresas.html");
                             break;
                     }
                 } else {

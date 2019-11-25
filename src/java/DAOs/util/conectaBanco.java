@@ -19,7 +19,9 @@ public class conectaBanco {
         try {
 
             Class.forName("org.postgresql.Driver");
-            conexao = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "Guitarhero");
+            conexao = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "root");
+            
+            //conexao = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "Guitarhero");
         } catch (ClassNotFoundException e) {
             System.out.println("Erro (Banco): " + e);
         } catch (SQLException e) {
