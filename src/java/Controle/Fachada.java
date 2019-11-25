@@ -6,7 +6,9 @@ import DAOs.UsuarioDAO;
 import DAOs.EnderecoDAO;
 import Interfaces.iDAO;
 import Interfaces.iFachada;
+import Interfaces.iStrategy;
 import Modelo.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -16,17 +18,39 @@ import java.util.HashMap;
 public class Fachada implements iFachada {
 
     private HashMap<String, iDAO> hashMapDao;
+    private HashMap<String, ArrayList<iStrategy>> hashMapStrategy;
 
     public Fachada() {
         this.hashMapDao = new HashMap<String, iDAO>();
         this.hashMapDao.put("Empresa", new EmpresaDAO());
         this.hashMapDao.put("Telefone", new TelefoneDAO());
+        
+        ArrayList<iStrategy> listaValidadores = new ArrayList<iStrategy>();
+        listaValidadores.add(new validadorExistenciaEmpresa());
+        
+        this.hashMapStrategy = new HashMap<String, ArrayList<iStrategy>>();
+        this.hashMapStrategy.put("Empresa", listaValidadores);
     }
 
     @Override
     public Mensagem cadastrar(EntidadeDominio entidade) {
-        Mensagem respostaDAO = this.hashMapDao.get(entidade.getClass().getSimpleName()).cadastrar(entidade);
-
+        Mensagem respostaDAO = null;
+        
+        boolean flagEntidadeValidada = true;
+        ArrayList<iStrategy> listaValidadores = this.hashMapStrategy.get(entidade.getClass().getSimpleName());
+        for (int i = 0; i < listaValidadores.size(); i++) {
+            respostaDAO = listaValidadores.get(i).processar(entidade);
+            
+            if(respostaDAO.getCodigo() != 0) {
+                flagEntidadeValidada = false;
+            }
+            
+        }
+        
+        if (flagEntidadeValidada) {
+            return this.hashMapDao.get(entidade.getClass().getSimpleName()).cadastrar(entidade);
+        }
+       
         return respostaDAO;
     }
 

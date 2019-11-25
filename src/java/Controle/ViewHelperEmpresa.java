@@ -60,7 +60,7 @@ public class ViewHelperEmpresa implements iViewHelper {
         Empresa empresa = new Empresa();
 
         try {
-            empresa.setId(Integer.valueOf(request.getParameter("id_startup")));
+            empresa.setId(Integer.valueOf(request.getParameter("id")));
         } catch (NumberFormatException error) {
             System.out.println("Cadastro de Empresa Nova...");
         }

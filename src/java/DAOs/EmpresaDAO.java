@@ -305,6 +305,79 @@ public class EmpresaDAO implements iDAO {
 
         return respostaDAO;
     }
+    
+    public Mensagem consultar(String cnpj) {
+
+        Mensagem respostaDAO = new Mensagem();
+
+        try {
+
+            String sql = "SELECT * FROM empresa WHERE cnpj = ?;";
+
+            PreparedStatement pstmt = this.conexao.prepareCall(sql);
+            pstmt.setString(1, cnpj);
+
+            ResultSet rs = pstmt.executeQuery();
+            Empresa empresa = null;
+            while (rs.next()) {
+
+                empresa = new Empresa();
+                empresa.setId(rs.getInt("id"));
+                empresa.setCNPJ(rs.getString("cnpj"));
+                empresa.setEmail(rs.getString("email"));
+                empresa.setFaturamento(Double.valueOf(rs.getString("faturamento")));
+                empresa.setNomeFantasia(rs.getString("nomeFantasia"));
+                empresa.setRazaoSocial(rs.getString("razaoSocial"));
+                empresa.setSituacao(rs.getString("situacao"));
+
+                Documento dre = new Documento();
+                dre.setNome("DRE");
+                dre.setCamninho(rs.getString("dre"));
+
+                empresa.setDRE(dre);
+
+                Categoria categoria = new Categoria();
+                categoria.setCategoria(rs.getString("categoria"));
+
+                empresa.setCategoria(categoria);
+
+                empresa.setEndereco((Endereco) new EnderecoDAO().consultar(rs.getInt("id_endereco")).getDados());
+            }
+
+            if (empresa != null) {
+
+                sql = "SELECT id_telefone FROM empresa_telefone WHERE id_empresa = ?";
+
+                pstmt = conexao.prepareCall(sql);
+                pstmt.setInt(1, empresa.getId());
+
+                rs = pstmt.executeQuery();
+                ArrayList<Telefone> listaTelefone = new ArrayList<Telefone>();
+                while (rs.next()) {
+                    listaTelefone.add((Telefone) new TelefoneDAO().consultar(rs.getInt("id_telefone")).getDados());
+                }
+
+                Telefone[] telefones = new Telefone[listaTelefone.size()];
+                for (int i = 0; i < listaTelefone.size(); i++) {
+                    telefones[i] = listaTelefone.get(i);
+                }
+
+                empresa.setTelefones(telefones);
+            }
+
+            respostaDAO.setCodigo(0);
+            respostaDAO.setMensagem("Dados encontrados com sucesso !!!");
+            respostaDAO.setDados(empresa);
+        } catch (SQLException error) {
+
+            System.out.println("Erro Ao buscar telefone da empresa--> " + error.getMessage());
+            respostaDAO.setCodigo(1);
+            respostaDAO.setMensagem("Erro ao buscar Empresa !!!");
+        }
+
+        return respostaDAO;
+    }
+    
 
     public Mensagem atualizarSituacao(int id) {
         EmpresaDAO empresaDAO = new EmpresaDAO();

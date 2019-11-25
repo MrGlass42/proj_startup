@@ -5,6 +5,7 @@
  */
 package Controle;
 
+import Interfaces.iCommand;
 import Interfaces.iViewHelper;
 import Modelo.*;
 import java.io.IOException;
@@ -24,12 +25,20 @@ import java.util.HashMap;
 public class controle_startup extends HttpServlet {
 
     private HashMap<String, iViewHelper> hashMapViewHelper;
+    private HashMap<String, iCommand> HashMapCommand;
 
     public controle_startup() {
 
         this.hashMapViewHelper = new HashMap<String, iViewHelper>();
         this.hashMapViewHelper.put("Empresa", new ViewHelperEmpresa());
         this.hashMapViewHelper.put("Telefone", new ViewHelperTelefone());
+        
+        this.HashMapCommand = new HashMap<String, iCommand>();
+        this.HashMapCommand.put("1", new salvarCommand());
+        this.HashMapCommand.put("3", new consultarIdCommand());
+        this.HashMapCommand.put("4", new excluirCommand());
+        this.HashMapCommand.put("5", new consultarCommand());
+        this.HashMapCommand.put("6", new atualizarSituacaoCommand());
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -40,26 +49,19 @@ public class controle_startup extends HttpServlet {
         String opcao = request.getParameter("opcao");
 
         switch (opcao) {
-            case "1":
-
+            default:
                 EntidadeDominio entidade = this.hashMapViewHelper.get(request.getParameter("chaveHash")).getEntidade(request);
-
-                Mensagem resposta_fachada = null;
-                if (entidade.getId() > 0) {
-                    resposta_fachada = new Fachada().editar(entidade);
+                
+                Mensagem respostaCommand = this.HashMapCommand.get(opcao).executar(entidade);
+                
+                if (respostaCommand.getCodigo() == 0) {
+                    out.print(new Gson().toJson(respostaCommand));
                 } else {
-                    resposta_fachada = new Fachada().cadastrar(entidade);
+                    response.sendRedirect("paginaErro.html");
                 }
-
-                System.out.println("RESPOSTA FACHADA --> " + resposta_fachada.getMensagem());
-
-                if (resposta_fachada.getCodigo() == 0) {
-                    response.sendRedirect("index.html");
-                } else {
-                    // Redireciona para a pagina de erros
-                }
-
+                
                 break;
+                
             case "2":
                 // Autenticação dos Usuários
 
@@ -68,8 +70,6 @@ public class controle_startup extends HttpServlet {
                 Mensagem respostaFachada = new Fachada().autenticar(usuario);
 
                 EntidadeDominio[] dados = (EntidadeDominio[]) respostaFachada.getDados();
-
-                //System.out.println(respostaFachada.getMensagem());
 
                 usuario = (Usuario) dados[0];
 
@@ -88,29 +88,6 @@ public class controle_startup extends HttpServlet {
                 } else {
                     System.out.println("USUARIO NAO EXISTE !!!");
                 }
-                break;
-            case "3":
-                int id_entidade = Integer.valueOf(request.getParameter("id_entidade"));
-                String classeEntidade = request.getParameter("classeEntidade");
-
-                out.print(new Gson().toJson(new Fachada().consultar(classeEntidade, id_entidade).getDados()));
-                break;
-            case "4":                
-                EntidadeDominio entidadeParaExclusao = this.hashMapViewHelper.get(request.getParameter("chaveHash")).getEntidade(request);
-                
-                Mensagem repostaFachada = new Fachada().excluir(entidadeParaExclusao);
-                
-                out.print(new Gson().toJson(repostaFachada));
-                break;
-            case "5":
-                EntidadeDominio[] respostaFachadaComEntidades = (EntidadeDominio[]) new Fachada().consultar(request.getParameter("chaveHash")).getDados();
-                
-                out.print(new Gson().toJson(respostaFachadaComEntidades));
-                break;
-            case "6":
-                Mensagem repostaFachadaAposAtualizacao = new Fachada().atualizar_situacao_empresa(Integer.valueOf(request.getParameter("id_startup")));
-                
-                out.print(new Gson().toJson(repostaFachadaAposAtualizacao));
                 break;
         }
     }

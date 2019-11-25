@@ -24,7 +24,8 @@ function atualizar_situacao(id_startup) {
         dataType: "json",
         data: {
             opcao: 6,
-            id_startup: id_startup
+            id: id_startup,
+            chaveHash: "Empresa",
         },
         beforeSend: function () {
             console.log("Iniciando Requisição Para Excluir Telefone...");
@@ -59,7 +60,7 @@ function excluir_empresa(id_startup) {
         data: {
             opcao: 4,
             chaveHash: "Empresa",
-            id_startup: id_startup
+            id: id_startup
         },
         beforeSend: function () {
             console.log("Iniciando Requisição Para Excluir Telefone...");
@@ -107,20 +108,22 @@ function buscar_empresas() {
                 }
                 if (resposta_controle != null) {
                     console.log(resposta_controle);
+                    
+                    var dados = resposta_controle.dados;
 
                     var htmlTabela = '';
-                    for (var i = 0; i < resposta_controle.length; i++) {
-                        htmlTabela += '<tr><td>' + resposta_controle[i].nomeFantasia + '</td>';
-                        htmlTabela += '<td>' + resposta_controle[i].CNPJ + '</td>';
-                        htmlTabela += '<td>' + resposta_controle[i].email + '</td>';
+                    for (var i = 0; i < dados.length; i++) {
+                        htmlTabela += '<tr><td>' + dados[i].nomeFantasia + '</td>';
+                        htmlTabela += '<td>' + dados[i].CNPJ + '</td>';
+                        htmlTabela += '<td>' + dados[i].email + '</td>';
                         
-                        if (resposta_controle[i].situacao != 'aprovada') {
-                            htmlTabela += '<td><a class="atualizar_situacao" style="cursor: pointer" id_empresa="' + resposta_controle[i].id + '"><u>' + resposta_controle[i].situacao + '<u></a></td>';
+                        if (dados[i].situacao != 'aprovada') {
+                            htmlTabela += '<td><a class="atualizar_situacao" style="cursor: pointer" id_empresa="' + dados[i].id + '"><u>' + dados[i].situacao + '<u></a></td>';
                         } else {
-                            htmlTabela += '<td>' + resposta_controle[i].situacao + '</td>';
+                            htmlTabela += '<td>' + dados[i].situacao + '</td>';
                         }
                         
-                        htmlTabela += '<td><button type="button" class="excluir btn btn-danger" style="cursor: pointer" id_empresa="' + resposta_controle[i].id + '">Excluir</button></td></tr>';
+                        htmlTabela += '<td><button type="button" class="excluir btn btn-danger" style="cursor: pointer" id_empresa="' + dados[i].id + '">Excluir</button></td></tr>';
                     }
 
                     jQuery("#tbody_tabela_empresas").html(htmlTabela);

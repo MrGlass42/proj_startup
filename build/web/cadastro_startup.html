@@ -24,7 +24,7 @@
                     <h2>Cadastro Startup</h2>
                     <form name="form_cadastro_startup" id="form_cadastro_startup" action="http://localhost:8082/proj_startup/controle_startup" method="POST">
                         <input type="hidden" id="opcao" name="opcao" value="1"/>
-                        <input type="hidden" id="id_startup" name="id_startup" />
+                        <input type="hidden" id="id_startup" name="id" />
                         <input type="hidden" id="chaveHash" name="chaveHash" value="Empresa"/>
                         <div class="row" style="margin-top: 3%;">
                             <div class="col-md-5">
@@ -153,7 +153,7 @@
                         <div class="row" style="margin-top: 3%;">
                             <div class="col-md-5">
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary" id="btn_cadastro_startup">Gravar</button>
+                                    <button type="button" class="btn btn-primary" id="btn_cadastro_startup">Gravar</button>
                                 </div>
                             </div>
                         </div>

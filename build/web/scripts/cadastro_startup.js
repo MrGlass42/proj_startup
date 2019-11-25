@@ -37,6 +37,22 @@ jQuery(document).ready(function () {
 
         excluirTelefone(id_telefone);
     });
+    
+    jQuery("#btn_cadastro_startup").on("click", function(e) {
+        e.preventDefault();
+        
+        if(jQuery("#senha").val() === jQuery("#confirmarSenha").val()) {
+            jQuery("#form_cadastro_startup").submit();
+            
+            setTimeout(function() {
+                window.location("index.html");
+            }, 500);
+        } else {
+            iziToast.error({
+                message: "<strong>Senhas diferentes</strong>"
+            });
+        }
+    });
 
 });
 
@@ -90,8 +106,8 @@ function buscar_empresa(id_empresa) {
         dataType: "json",
         data: {
             opcao: 3,
-            id_entidade: id_empresa,
-            classeEntidade: "Empresa"
+            id: id_empresa,
+            chaveHash: "Empresa"
         },
         beforeSend: function () {
             console.log("Iniciando Requisição Para Buscar Dados Da Empresa...");
@@ -107,23 +123,25 @@ function buscar_empresa(id_empresa) {
                 if (resposta_controle != null) {
 
                     console.log(resposta_controle);
+                    
+                    var dados = resposta_controle.dados;
 
-                    jQuery("#id_startup").val(resposta_controle.id);
-                    jQuery("#email").val(resposta_controle.email);
-                    jQuery("#nomeFantasia").val(resposta_controle.nomeFantasia);
-                    jQuery("#razaoSocial").val(resposta_controle.razaoSocial);
-                    jQuery("#cnpj").val(resposta_controle.CNPJ);
-                    jQuery("#categoria").val(resposta_controle.categoria.categoria);
-                    jQuery("#complemento").val(resposta_controle.endereco.complemento);
-                    jQuery("#logradouro").val(resposta_controle.endereco.logradouro);
-                    jQuery("#numero").val(resposta_controle.endereco.numero);
-                    jQuery("#cidade").val(resposta_controle.endereco.cidade.nome);
-                    jQuery("#estado").val(resposta_controle.endereco.cidade.estado.nome);
-                    jQuery("#pais").val(resposta_controle.endereco.cidade.estado.pais.nome);
+                    jQuery("#id_startup").val(dados.id);
+                    jQuery("#email").val(dados.email);
+                    jQuery("#nomeFantasia").val(dados.nomeFantasia);
+                    jQuery("#razaoSocial").val(dados.razaoSocial);
+                    jQuery("#cnpj").val(dados.CNPJ);
+                    jQuery("#categoria").val(dados.categoria.categoria);
+                    jQuery("#complemento").val(dados.endereco.complemento);
+                    jQuery("#logradouro").val(dados.endereco.logradouro);
+                    jQuery("#numero").val(dados.endereco.numero);
+                    jQuery("#cidade").val(dados.endereco.cidade.nome);
+                    jQuery("#estado").val(dados.endereco.cidade.estado.nome);
+                    jQuery("#pais").val(dados.endereco.cidade.estado.pais.nome);
 
                     jQuery(".campos_senha").hide();
 
-                    var telefones = resposta_controle.telefones;
+                    var telefones = dados.telefones;
                     var htmlTelefones = '';
                     for (var i = 0; i < telefones.length; i++) {
                         htmlTelefones += '<p><a style="cursor: pointer;" class="excluir_telefone" id_telefone="' + telefones[i].id + '">' + telefones[i].numero + ' - </a></p>'
